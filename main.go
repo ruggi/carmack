@@ -36,7 +36,7 @@ func main() {
 	app.Author = "Federico Ruggi"
 	app.Description = "// TODO //"
 	app.Commands = []cli.Command{
-		cli.Command{
+		{
 			Name:  "add",
 			Usage: "Add a new item to today's plan",
 			Flags: []cli.Flag{
@@ -55,22 +55,22 @@ func main() {
 			},
 			Action: commands.Add(cfg.Username, cfg.Folder, cfg.UserFolder()),
 		},
-		cli.Command{
+		{
 			Name:   "open",
 			Usage:  "Show open items",
 			Action: commands.Open(cfg.UserFolder()),
 		},
-		cli.Command{
+		{
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "List all plan files",
 			Action:  commands.List(cfg.UserFolder()),
 		},
-		cli.Command{
+		{
 			Name:  "git",
 			Usage: "Issue git commands",
 			Subcommands: []cli.Command{
-				cli.Command{
+				{
 					Name:   "init",
 					Usage:  "initialize plan files git repo",
 					Action: commands.GitInit(cfg.Folder),
