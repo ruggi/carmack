@@ -8,8 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ruggi/carmack/config"
+	"github.com/ruggi/carmack/git"
 	"github.com/ruggi/carmack/plan"
-	"github.com/ruggi/carmack/shell"
 	"github.com/urfave/cli"
 )
 
@@ -17,14 +18,17 @@ const (
 	timeFormat = "2006-01-02"
 )
 
+type Carmack struct {
+	conf config.Config
+}
+
 // Add inserts a new entry to today's plan file.
-func Add(username, folder, userFolder string) cli.ActionFunc {
-	return func(ctx *cli.Context) error {
+func Add(ctx *cli.Context) error {
 		if len(ctx.Args()) == 0 {
 			return fmt.Errorf("missing argument")
 		}
 		s := strings.Join(ctx.Args(), " ")
-		filename := filepath.Join(userFolder, time.Now().Format(timeFormat)+".plan")
+		filename := filepath.Join(userFolder, time.Now().UTC().Format(timeFormat)+".plan")
 		p, err := plan.Load(filename)
 		if err != nil {
 			return err
@@ -42,12 +46,12 @@ func Add(username, folder, userFolder string) cli.ActionFunc {
 		if err != nil {
 			return err
 		}
-		if shell.HasGit(folder) {
-			err = shell.Verbose.Git(folder, "add", ".")
+		if git.Initialized(folder) {
+			err = git.Add(folder, ".")
 			if err != nil {
 				return fmt.Errorf("cannot add: %s", err)
 			}
-			err = shell.Verbose.Git(folder, "commit", "-m", fmt.Sprintf(`'%s: plan update %s'`, username, time.Now().Format(time.RFC3339)))
+			err = git.Commit(folder, fmt.Sprintf(`'%s: plan update %s'`, username, time.Now().UTC().Format(time.RFC3339)))
 			if err != nil {
 				return fmt.Errorf("cannot commit: %s", err)
 			}
