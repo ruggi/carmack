@@ -7,16 +7,13 @@ import (
 
 	"github.com/ruggi/carmack/commands"
 	"github.com/ruggi/carmack/config"
+	"github.com/ruggi/carmack/git"
+	"github.com/ruggi/carmack/util"
 	"github.com/urfave/cli"
 )
 
 const (
 	folderName = ".carmack"
-)
-
-var (
-	// Version is the release version semver number.
-	Version = "1.0.0"
 )
 
 func main() {
@@ -32,13 +29,13 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "carmack"
 	app.Usage = "track daily progress with .plan files"
-	app.Version = Version
+	app.Version = util.Version
 	app.Author = "Federico Ruggi"
 	app.Description = "// TODO //"
 	app.Commands = []cli.Command{
 		{
 			Name:  "add",
-			Usage: "Add a new item to today's plan",
+			Usage: "Add a new entry to today's plan",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "done,d",
@@ -56,9 +53,31 @@ func main() {
 			Action: commands.Add(cfg.Username, cfg.Folder, cfg.UserFolder()),
 		},
 		{
-			Name:   "open",
-			Usage:  "Show open items",
-			Action: commands.Open(cfg.UserFolder()),
+			Name:  "show",
+			Usage: "Show open entries",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "open,o",
+					Usage: "show open entries",
+				},
+				cli.BoolFlag{
+					Name:  "done,d",
+					Usage: "show done entries",
+				},
+				cli.BoolFlag{
+					Name:  "completed,c",
+					Usage: "show completed entries",
+				},
+				cli.BoolFlag{
+					Name:  "canceled,x",
+					Usage: "show canceled entries",
+				},
+				cli.StringFlag{
+					Name:  "user,u",
+					Usage: "show entries for a specific user",
+				},
+			},
+			Action: commands.Show(cfg.Folder, cfg.UserFolder()),
 		},
 		{
 			Name:    "list",
@@ -88,8 +107,13 @@ func setupConfig() (config.Config, error) {
 	if err != nil {
 		return config.Config{}, err
 	}
+	folder := filepath.Join(u.HomeDir, folderName)
+	username := git.UserName(folder)
+	if username == "" {
+		username = u.Username
+	}
 	return config.Config{
-		Username: u.Username,
-		Folder:   filepath.Join(u.HomeDir, folderName),
+		Username: username,
+		Folder:   folder,
 	}, nil
 }
