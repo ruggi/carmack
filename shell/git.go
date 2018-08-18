@@ -38,7 +38,7 @@ func (g git) UserName(folder string) string {
 	err := b.Git(folder, "config", "--local", "user.name")
 	if err != nil {
 		b.Buffer.Reset()
-		err = b.Git(folder, "config", "--global", "user.name")
+		err = b.Git(".", "config", "--global", "user.name")
 		if err != nil {
 			return ""
 		}
