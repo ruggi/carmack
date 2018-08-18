@@ -7,6 +7,15 @@ import (
 	"strings"
 )
 
+type EntryType int8
+
+const (
+	Note EntryType = iota
+	Done
+	Completed
+	Canceled
+)
+
 // Plan contains all the entries, divided in Done, Completed, Canceled, and Notes.
 type Plan struct {
 	Done      []string
@@ -37,24 +46,18 @@ func (p Plan) String() string {
 	return b.String()
 }
 
-// AddDone adds a new '*' entry, for something that has been started and completed on the same day.
-func (p *Plan) AddDone(s string) {
-	p.Done = p.append("* ", p.Done, s)
-}
-
-// AddCompleted adds a new '+' entry, for something that has been started earlier and has been completed on the same day.
-func (p *Plan) AddCompleted(s string) {
-	p.Completed = p.append("+ ", p.Completed, s)
-}
-
-// AddCanceled adds a new '-' entry, for something that has been canceled and is will not be completed anymore.
-func (p *Plan) AddCanceled(s string) {
-	p.Canceled = p.append("- ", p.Canceled, s)
-}
-
-// AddNote adds a generic line to the plan.
-func (p *Plan) AddNote(s string) {
-	p.Notes = p.append("", p.Notes, s)
+// Add adds a new entry to the plan.
+func (p *Plan) Add(entry string, typ EntryType) {
+	switch typ {
+	case Done:
+		p.append("* ", p.Done, entry)
+	case Completed:
+		p.append("+ ", p.Completed, entry)
+	case Canceled:
+		p.append("- ", p.Canceled, entry)
+	default:
+		p.append("", p.Notes, entry)
+	}
 }
 
 func (p Plan) append(prefix string, b []string, s string) []string {

@@ -2,6 +2,9 @@ package main
 
 import (
 	"os"
+	"strings"
+
+	"github.com/ruggi/carmack/plan"
 
 	"github.com/ruggi/carmack/carmack"
 	"github.com/ruggi/carmack/commands"
@@ -47,7 +50,11 @@ func main() {
 					Usage: "[-] for something old that has been canceled/decided against",
 				},
 			},
-			Action: commands.Add(ctx),
+			Action: func(c *cli.Context) error {
+				entry := strings.Join(c.Args(), " ")
+				entryType := makeEntryTypeFromFlags(c)
+				return commands.Add(ctx, entry, entryType)
+			},
 		},
 		{
 			Name:  "show",
@@ -74,7 +81,11 @@ func main() {
 					Usage: "show entries for a specific user",
 				},
 			},
-			Action: commands.Show(ctx),
+			Action: func(c *cli.Context) error {
+				user := c.String("user")
+				entryType := makeEntryTypeFromFlags(c)
+				return commands.Show(ctx, user, entryType)
+			},
 		},
 		{
 			Name:    "list",
@@ -87,15 +98,32 @@ func main() {
 			Usage: "Issue git commands",
 			Subcommands: []cli.Command{
 				{
-					Name:   "init",
-					Usage:  "initialize plan files git repo",
-					Action: commands.GitInit(ctx),
+					Name:  "init",
+					Usage: "initialize plan files git repo",
+					Action: func(c *cli.Context) error {
+						return commands.GitInit(ctx)
+					},
 				},
 			},
 			SkipFlagParsing: true,
-			Action:          commands.Git(ctx),
+			Action: func(c *cli.Context) error {
+				return commands.Git(ctx, c.Args()...)
+			},
 		},
 	}
 
 	app.RunAndExitOnError()
+}
+
+func makeEntryTypeFromFlags(c *cli.Context) plan.EntryType {
+	if c.Bool("done") {
+		return plan.Done
+	}
+	if c.Bool("completed") {
+		return plan.Completed
+	}
+	if c.Bool("canceled") {
+		return plan.Canceled
+	}
+	return plan.Note
 }
