@@ -1,4 +1,4 @@
 package carmack
 
 // Version is the release version semver number.
-var Version = "1.0.0"
+var Version = "0.0.0"
