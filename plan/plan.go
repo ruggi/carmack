@@ -37,16 +37,16 @@ func (p Plan) String() string {
 			return
 		}
 		for _, line := range block {
-			b.WriteString(line)
+			b.WriteString(strings.TrimSpace(line))
 			b.WriteString("\n")
 		}
 		b.WriteString("\n")
 	}
+
 	writeBlock(p.Done)
 	writeBlock(p.Completed)
 	writeBlock(p.Canceled)
-	b.WriteString(strings.TrimSpace(strings.Join(p.Notes, "\n")))
-	b.WriteString("\n")
+	writeBlock(p.Notes)
 
 	return b.String()
 }
@@ -55,17 +55,18 @@ func (p Plan) String() string {
 func (p *Plan) Add(entry string, typ EntryType) {
 	switch typ {
 	case Done:
-		p.append("* ", p.Done, entry)
+		p.Done = p.append("* ", p.Done, entry)
 	case Completed:
-		p.append("+ ", p.Completed, entry)
+		p.Completed = p.append("+ ", p.Completed, entry)
 	case Canceled:
-		p.append("- ", p.Canceled, entry)
+		p.Canceled = p.append("- ", p.Canceled, entry)
 	default:
-		p.append("", p.Notes, entry)
+		p.Notes = p.append("", p.Notes, entry)
 	}
 }
 
 func (p Plan) append(prefix string, b []string, s string) []string {
+	fmt.Println("appending", prefix, s, "to", b)
 	return append(b, fmt.Sprintf("%s%s", prefix, s))
 }
 
@@ -85,6 +86,9 @@ func parse(in string) Plan {
 	p := Plan{}
 	lines := strings.Split(strings.TrimSpace(in), "\n")
 	for _, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, "*") {
 			p.Done = append(p.Done, line)
