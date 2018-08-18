@@ -20,7 +20,7 @@ func (c *Context) UserFolder() string {
 	return filepath.Join(c.Folder, c.Username)
 }
 
-// Load creates a new context.
+// LoadContext creates a new context.
 func LoadContext(folderName string) (*Context, error) {
 	u, err := user.Current()
 	if err != nil {

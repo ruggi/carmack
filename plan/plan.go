@@ -7,12 +7,17 @@ import (
 	"strings"
 )
 
+// EntryType represents a plan file's entry type
 type EntryType int8
 
 const (
+	// Note is an entry with no prefix
 	Note EntryType = iota
+	// Done is something completed on the same day.
 	Done
+	// Completed is something completed on a later day.
 	Completed
+	// Canceled is something decided against on a later day.
 	Canceled
 )
 

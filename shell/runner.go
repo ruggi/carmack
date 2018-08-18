@@ -20,11 +20,13 @@ var Quiet = Runner{
 	Stdin: os.Stdin,
 }
 
+// Buffered is a runner which writes on a bytes.Buffer.
 type Buffered struct {
 	Runner
 	Buffer bytes.Buffer
 }
 
+// NewBuffered creates a new buffered runner.
 func NewBuffered() *Buffered {
 	b := Buffered{}
 	b.Runner.Stdin = os.Stdin

@@ -4,10 +4,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ruggi/carmack/plan"
-
 	"github.com/ruggi/carmack/carmack"
 	"github.com/ruggi/carmack/commands"
+	"github.com/ruggi/carmack/plan"
 	"github.com/urfave/cli"
 )
 
