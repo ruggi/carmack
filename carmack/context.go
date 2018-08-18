@@ -4,7 +4,7 @@ import (
 	"os/user"
 	"path/filepath"
 
-	"github.com/ruggi/carmack/git"
+	"github.com/ruggi/carmack/shell"
 )
 
 // Context contains runtime info and is passed to every command handler.
@@ -28,7 +28,7 @@ func LoadContext(folderName string) (*Context, error) {
 	}
 
 	folder := filepath.Join(u.HomeDir, folderName)
-	username := git.UserName(folder)
+	username := shell.Git.UserName(folder)
 	if username == "" {
 		username = u.Username
 	}

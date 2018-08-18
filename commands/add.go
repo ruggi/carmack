@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/ruggi/carmack/carmack"
-	"github.com/ruggi/carmack/git"
 	"github.com/ruggi/carmack/plan"
+	"github.com/ruggi/carmack/shell"
 )
 
 const (
@@ -35,14 +35,14 @@ func Add(ctx *carmack.Context, entry string, entryType plan.EntryType) error {
 		return err
 	}
 
-	if git.Initialized(ctx.Folder) {
-		err = git.Add(ctx.Folder, ".")
+	if shell.Git.Initialized(ctx.Folder) {
+		err = shell.Git.Add(ctx.Folder, ".")
 		if err != nil {
 			return fmt.Errorf("cannot add: %s", err)
 		}
 
 		m := fmt.Sprintf(`'%s: plan update %s'`, ctx.Username, time.Now().UTC().Format(time.RFC3339))
-		err = git.Commit(ctx.Folder, m)
+		err = shell.Git.Commit(ctx.Folder, m)
 		if err != nil {
 			return fmt.Errorf("cannot commit: %s", err)
 		}
