@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ruggi/carmack/config"
+	"github.com/ruggi/carmack/carmack"
 	"github.com/ruggi/carmack/git"
 	"github.com/ruggi/carmack/plan"
 	"github.com/urfave/cli"
@@ -18,44 +18,48 @@ const (
 	timeFormat = "2006-01-02"
 )
 
-type Carmack struct {
-	conf config.Config
-}
-
 // Add inserts a new entry to today's plan file.
-func Add(ctx *cli.Context) error {
-		if len(ctx.Args()) == 0 {
+func Add(ctx *carmack.Context) cli.ActionFunc {
+	return func(c *cli.Context) error {
+		if len(c.Args()) == 0 {
 			return fmt.Errorf("missing argument")
 		}
-		s := strings.Join(ctx.Args(), " ")
-		filename := filepath.Join(userFolder, time.Now().UTC().Format(timeFormat)+".plan")
+
+		filename := filepath.Join(ctx.UserFolder(), time.Now().UTC().Format(timeFormat)+".plan")
 		p, err := plan.Load(filename)
 		if err != nil {
 			return err
 		}
-		if ctx.Bool("done") {
+
+		s := strings.Join(c.Args(), " ")
+		if c.Bool("done") {
 			p.AddDone(s)
-		} else if ctx.Bool("completed") {
+		} else if c.Bool("completed") {
 			p.AddCompleted(s)
-		} else if ctx.Bool("canceled") {
+		} else if c.Bool("canceled") {
 			p.AddCanceled(s)
 		} else {
 			p.AddNote(s)
 		}
+
 		err = ioutil.WriteFile(filename, []byte(p.String()), os.ModePerm)
 		if err != nil {
 			return err
 		}
-		if git.Initialized(folder) {
-			err = git.Add(folder, ".")
+
+		if git.Initialized(ctx.Folder) {
+			err = git.Add(ctx.Folder, ".")
 			if err != nil {
 				return fmt.Errorf("cannot add: %s", err)
 			}
-			err = git.Commit(folder, fmt.Sprintf(`'%s: plan update %s'`, username, time.Now().UTC().Format(time.RFC3339)))
+
+			m := fmt.Sprintf(`'%s: plan update %s'`, ctx.Username, time.Now().UTC().Format(time.RFC3339))
+			err = git.Commit(ctx.Folder, m)
 			if err != nil {
 				return fmt.Errorf("cannot commit: %s", err)
 			}
 		}
+
 		return nil
 	}
 }

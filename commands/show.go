@@ -5,30 +5,31 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ruggi/carmack/carmack"
 	"github.com/ruggi/carmack/shell"
 	"github.com/urfave/cli"
 )
 
 // Show shows entries in plan files.
-func Show(folder, userFolder string) cli.ActionFunc {
-	return func(ctx *cli.Context) error {
-		targetFolder := userFolder
-		if ctx.IsSet("user") {
-			u := ctx.String("user")
+func Show(ctx *carmack.Context) cli.ActionFunc {
+	return func(c *cli.Context) error {
+		targetFolder := ctx.UserFolder()
+		if c.IsSet("user") {
+			u := c.String("user")
 			if _, err := os.Stat(targetFolder); os.IsNotExist(err) {
 				return fmt.Errorf("user %q not found", u)
 			}
-			targetFolder = filepath.Join(folder, u)
+			targetFolder = filepath.Join(ctx.Folder, u)
 		}
 
 		var re string
-		if ctx.Bool("open") {
+		if c.Bool("open") {
 			re = "^[^*+-]"
-		} else if ctx.Bool("done") {
+		} else if c.Bool("done") {
 			re = "^\\*"
-		} else if ctx.Bool("completed") {
+		} else if c.Bool("completed") {
 			re = "^\\+"
-		} else if ctx.Bool("canceled") {
+		} else if c.Bool("canceled") {
 			re = "^\\-"
 		}
 		if re == "" {

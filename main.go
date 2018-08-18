@@ -2,13 +2,9 @@ package main
 
 import (
 	"os"
-	"os/user"
-	"path/filepath"
 
+	"github.com/ruggi/carmack/carmack"
 	"github.com/ruggi/carmack/commands"
-	"github.com/ruggi/carmack/config"
-	"github.com/ruggi/carmack/git"
-	"github.com/ruggi/carmack/util"
 	"github.com/urfave/cli"
 )
 
@@ -17,11 +13,11 @@ const (
 )
 
 func main() {
-	cfg, err := setupConfig()
+	ctx, err := carmack.LoadContext(folderName)
 	if err != nil {
 		panic(err)
 	}
-	err = os.MkdirAll(cfg.UserFolder(), 0755)
+	err = os.MkdirAll(ctx.UserFolder(), 0755)
 	if err != nil {
 		panic(err)
 	}
@@ -29,9 +25,10 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "carmack"
 	app.Usage = "track daily progress with .plan files"
-	app.Version = util.Version
+	app.Version = carmack.Version
 	app.Author = "Federico Ruggi"
 	app.Description = "// TODO //"
+
 	app.Commands = []cli.Command{
 		{
 			Name:  "add",
@@ -47,10 +44,10 @@ func main() {
 				},
 				cli.BoolFlag{
 					Name:  "canceled,x",
-					Usage: "[-] for something old that has been canceled",
+					Usage: "[-] for something old that has been canceled/decided against",
 				},
 			},
-			Action: commands.Add(cfg.Username, cfg.Folder, cfg.UserFolder()),
+			Action: commands.Add(ctx),
 		},
 		{
 			Name:  "show",
@@ -77,13 +74,13 @@ func main() {
 					Usage: "show entries for a specific user",
 				},
 			},
-			Action: commands.Show(cfg.Folder, cfg.UserFolder()),
+			Action: commands.Show(ctx),
 		},
 		{
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "List all plan files",
-			Action:  commands.List(cfg.UserFolder()),
+			Action:  commands.List(ctx),
 		},
 		{
 			Name:  "git",
@@ -92,28 +89,13 @@ func main() {
 				{
 					Name:   "init",
 					Usage:  "initialize plan files git repo",
-					Action: commands.GitInit(cfg.Folder),
+					Action: commands.GitInit(ctx),
 				},
 			},
 			SkipFlagParsing: true,
-			Action:          commands.Git(cfg.Folder),
+			Action:          commands.Git(ctx),
 		},
 	}
-	app.RunAndExitOnError()
-}
 
-func setupConfig() (config.Config, error) {
-	u, err := user.Current()
-	if err != nil {
-		return config.Config{}, err
-	}
-	folder := filepath.Join(u.HomeDir, folderName)
-	username := git.UserName(folder)
-	if username == "" {
-		username = u.Username
-	}
-	return config.Config{
-		Username: username,
-		Folder:   folder,
-	}, nil
+	app.RunAndExitOnError()
 }
