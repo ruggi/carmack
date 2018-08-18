@@ -90,7 +90,9 @@ func main() {
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "List all plan files",
-			Action:  commands.List(ctx),
+			Action: func(c *cli.Context) error {
+				return commands.List(ctx)
+			},
 		},
 		{
 			Name:  "git",
