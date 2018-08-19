@@ -10,7 +10,7 @@ clean:
 	rm -rf bin/*
 
 build: clean
-	go build -ldflags="-w -s -X github.com/ruggi/carmack/carmack.Version=`git describe`" -o ./bin/carmack
+	go build -ldflags="-w -s -X github.com/ruggi/carmack/util.Version=`git describe`" -o ./bin/carmack
 
 run: build
 	./bin/carmack
@@ -31,11 +31,11 @@ publish:
 	$(eval new_major = $(word 1, $(dots)))
 	$(eval new_minor = $(word 2, $(dots)))
 	$(eval new_bug = $(word 3, $(dots)))
-	sed -i.bak -e 's/^\(var Version = \).*/\1"$(VERSION)"/g' carmack/version.go
+	sed -i.bak -e 's/^\(var Version = \).*/\1"$(VERSION)"/g' util/version.go
 	sed -i.bak -e 's/^\(CURRENT_VERSION_MAJOR = \).*/\1$(new_major)/g' Makefile
 	sed -i.bak -e 's/^\(CURRENT_VERSION_MINOR = \).*/\1$(new_minor)/g' Makefile
 	sed -i.bak -e 's/^\(CURRENT_VERSION_BUG = \).*/\1$(new_bug)/g' Makefile
-	rm Makefile.bak carmack/version.go.bak
+	rm Makefile.bak util/version.go.bak
 
 	git commit -am 'Bump version to v$(VERSION)'
 	git tag v$(VERSION)

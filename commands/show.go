@@ -5,14 +5,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ruggi/carmack/context"
 	"github.com/ruggi/carmack/plan"
-
-	"github.com/ruggi/carmack/carmack"
 	"github.com/ruggi/carmack/shell"
 )
 
 // Show shows entries from plan files.
-func Show(ctx *carmack.Context, user string, entryType plan.EntryType) error {
+func Show(ctx *context.Context, user string, entryType plan.EntryType) error {
 	targetFolder := ctx.UserFolder()
 	if user != "" {
 		targetFolder = filepath.Join(ctx.Folder, user)

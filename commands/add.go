@@ -7,9 +7,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ruggi/carmack/carmack"
+	"github.com/ruggi/carmack/context"
 	"github.com/ruggi/carmack/plan"
 	"github.com/ruggi/carmack/shell"
+	"github.com/ruggi/carmack/util"
 )
 
 const (
@@ -17,7 +18,7 @@ const (
 )
 
 // Add adds a new entry to today's plan file.
-func Add(ctx *carmack.Context, entry string, entryType plan.EntryType) error {
+func Add(ctx *context.Context, entry string, entryType plan.EntryType) error {
 	if entry == "" {
 		return fmt.Errorf("missing argument")
 	}
@@ -40,9 +41,7 @@ func Add(ctx *carmack.Context, entry string, entryType plan.EntryType) error {
 		if err != nil {
 			return fmt.Errorf("cannot add: %s", err)
 		}
-
-		m := fmt.Sprintf(`'%s: plan update %s'`, ctx.Username, time.Now().UTC().Format(time.RFC3339))
-		err = shell.Git.Commit(ctx.Folder, m)
+		err = shell.Git.Commit(ctx.Folder, util.CommitMessage(ctx))
 		if err != nil {
 			return fmt.Errorf("cannot commit: %s", err)
 		}

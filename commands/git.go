@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ruggi/carmack/carmack"
+	"github.com/ruggi/carmack/context"
 	"github.com/ruggi/carmack/shell"
 )
 
 // Git runs a git command on the plan repo, if it's been initialized.
-func Git(ctx *carmack.Context, args ...string) error {
+func Git(ctx *context.Context, args ...string) error {
 	if !shell.Git.Initialized(ctx.Folder) {
 		return fmt.Errorf("git not initialized, run '%s git init'", os.Args[0])
 	}
@@ -20,9 +20,9 @@ func Git(ctx *carmack.Context, args ...string) error {
 }
 
 // GitInit initializes the plan repo, if it's not already initialized.
-func GitInit(ctx *carmack.Context) error {
+func GitInit(ctx *context.Context) error {
 	if shell.Git.Initialized(ctx.Folder) {
 		return fmt.Errorf("git repo already initialized")
 	}
-	return shell.Git.Init(ctx.Folder)
+	return shell.Git.Init(ctx)
 }

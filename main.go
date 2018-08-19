@@ -3,11 +3,15 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
+	"path/filepath"
 	"strings"
 
-	"github.com/ruggi/carmack/carmack"
 	"github.com/ruggi/carmack/commands"
+	"github.com/ruggi/carmack/context"
 	"github.com/ruggi/carmack/plan"
+	"github.com/ruggi/carmack/shell"
+	"github.com/ruggi/carmack/util"
 	"github.com/urfave/cli"
 )
 
@@ -16,7 +20,7 @@ const (
 )
 
 func main() {
-	ctx, err := carmack.LoadContext(folderName)
+	ctx, err := loadContext(folderName)
 	if err != nil {
 		panic(err)
 	}
@@ -28,7 +32,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "carmack"
 	app.Usage = "track daily progress with .plan files"
-	app.Version = carmack.Version
+	app.Version = util.Version
 	app.Author = "Federico Ruggi"
 	app.Description = "// TODO //"
 
@@ -119,6 +123,24 @@ func main() {
 	}
 
 	app.RunAndExitOnError()
+}
+
+func loadContext(folderName string) (*context.Context, error) {
+	u, err := user.Current()
+	if err != nil {
+		return nil, err
+	}
+
+	folder := filepath.Join(u.HomeDir, folderName)
+	username := shell.Git.UserName(folder)
+	if username == "" {
+		username = u.Username
+	}
+
+	return &context.Context{
+		Username: username,
+		Folder:   folder,
+	}, nil
 }
 
 func makeEntryTypeFromFlags(c *cli.Context) plan.EntryType {

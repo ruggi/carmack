@@ -1,7 +1,11 @@
 package shell
 
 import (
+	"path/filepath"
 	"strings"
+
+	"github.com/ruggi/carmack/context"
+	"github.com/ruggi/carmack/util"
 )
 
 type git struct{}
@@ -16,18 +20,24 @@ func (g git) Initialized(folder string) bool {
 }
 
 // Init initializes the git repo.
-func (g git) Init(folder string) error {
-	err := Verbose.Git(folder, "init")
+func (g git) Init(ctx *context.Context) error {
+	err := Verbose.Git(ctx.Folder, "init")
 	if err != nil {
 		return err
 	}
-	err = g.Add(folder, ".")
+	files, err := filepath.Glob(filepath.Join(ctx.UserFolder(), "*.plan"))
 	if err != nil {
 		return err
 	}
-	err = g.Commit(folder, "initial commit")
-	if err != nil {
-		return err
+	if len(files) > 0 {
+		err = g.Add(ctx.Folder, files...)
+		if err != nil {
+			return err
+		}
+		err = g.Commit(ctx.Folder, util.CommitMessage(ctx))
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
