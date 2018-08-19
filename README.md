@@ -8,8 +8,6 @@ Daily notes and tasks are stored in plain `.plan` files, using a simple and grep
 
 carmack stores each user's (or teammate!) daily plan files in [subfolders](#structure), so it's easy to see who did what on a given date.
 
-The data is stored in a git repository keeping track of everyone's activity.
-
 ## Installation
 
 ```sh
