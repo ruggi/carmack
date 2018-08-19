@@ -66,7 +66,6 @@ func (p *Plan) Add(entry string, typ EntryType) {
 }
 
 func (p Plan) append(prefix string, b []string, s string) []string {
-	fmt.Println("appending", prefix, s, "to", b)
 	return append(b, fmt.Sprintf("%s%s", prefix, s))
 }
 
