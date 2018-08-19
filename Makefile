@@ -4,9 +4,12 @@ CURRENT_VERSION_MAJOR = 0
 CURRENT_VERSION_MINOR = 0
 CURRENT_VERSION_BUG = 0
 
-.PHONY: build run install publish publish-major publish-minor publish-bug update-master test
+.PHONY: clean build run install publish publish-major publish-minor publish-bug update-master test
 
-build:
+clean:
+	rm -rf bin/*
+
+build: clean
 	go build -ldflags="-w -s -X github.com/ruggi/carmack/carmack.Version=`git describe`" -o ./bin/carmack
 
 run: build
