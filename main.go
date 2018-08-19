@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -81,6 +82,10 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
+				if !(c.Bool("done") || c.Bool("completed") || c.Bool("canceled") || c.Bool("open")) {
+					return fmt.Errorf("missing entry type flag")
+				}
+
 				user := c.String("user")
 				entryType := makeEntryTypeFromFlags(c)
 				return commands.Show(ctx, user, entryType)
