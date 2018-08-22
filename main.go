@@ -33,8 +33,13 @@ func main() {
 	app.Name = "carmack"
 	app.Usage = "track daily progress with .plan files"
 	app.Version = util.Version
-	app.Author = "Federico Ruggi"
-	app.Description = "// TODO //"
+	app.Description = `
+		carmack is a daily progress tracker for teams, inspired by John Carmack's .plan files and based on git.
+		Daily notes and tasks are stored in plain .plan files, using a simple and grep-able format,
+		divided into done, completed, canceled, and open entries.
+
+		See https://github.com/ruggi/carmack#usage for more.
+	`
 
 	app.Commands = []cli.Command{
 		{
