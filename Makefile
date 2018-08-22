@@ -40,6 +40,7 @@ publish:
 	git commit -am 'Bump version to v$(VERSION)'
 	git tag v$(VERSION)
 	git push --follow-tags
+	git push origin v$($VERSION)
 
 publish-major: update-master
 	@make publish VERSION=$$(($(CURRENT_VERSION_MAJOR) + 1)).0.0
