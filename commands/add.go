@@ -23,7 +23,7 @@ func Add(ctx *context.Context, entry string, entryType plan.EntryType) error {
 		return fmt.Errorf("missing argument")
 	}
 
-	filename := filepath.Join(ctx.UserFolder(), time.Now().UTC().Format(timeFormat)+".plan")
+	filename := filepath.Join(ctx.UserFolder(), fmt.Sprintf("%s.plan", time.Now().UTC().Format(timeFormat)))
 
 	p, err := plan.Load(filename)
 	if err != nil {

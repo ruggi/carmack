@@ -36,7 +36,7 @@ $ carmack add --canceled 'weird feature'
 
 You can use the `show` command to show entries from plan files. They can be filtered with the `--done`, `--completed`, `--canceled`, or `--open` flags.
 
-By default it shows entries for the your (current user's) plan files.
+By default it shows entries for your (current user's) plan files.
 
 It's possible to use the `--user [username]` option to show entries for a specific user.
 
