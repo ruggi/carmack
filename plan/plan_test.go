@@ -36,6 +36,7 @@ mixed
 this is a note
 again
 mixed
+
 `
 	require.Equal(t, expected, s)
 }
